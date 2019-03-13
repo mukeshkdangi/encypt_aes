@@ -34,6 +34,14 @@ file alice.pub to produce the cipher text file secret.cip:
 Then the following command would decrypt the file secret.cip:
 ```./crypt.py -d alice.prv secret.cip secret.txt```
 
+Some random number examples (p,q):  
+104087 104089 104107 104113 104119 104123 104147 104149 104161 104173 
+104179 104183 104207 104231 104233 104239 104243 104281 104287 104297 
+104309 104311 104323 104327 104347 104369 104381 104383 104393 104399 
+104417 104459 104471 104473 104479 104491 104513 104527 104537 104543 
+104549 104551 104561 104579 104593 104597 104623 104639 104651 104659 
+104677 104681 104683 104693 104701 104707 104711 104717 104723 104729
+ 
  To encrypt a file, the program must generate a random key K for AES-128 using
 random.SystemRandom or os.urandom(), use the key K with AES-128 to encrypt the data from
 the input file, use RSA with the public key file specified on the command line to encrypt K (we
