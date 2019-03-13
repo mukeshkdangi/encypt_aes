@@ -9,14 +9,18 @@ To complete the project, you will need to write two Python programs:
 -[x] 1. genkeys.py — generate RSA public and private keys.
  The program takes a single command line argument: the name of the user for whom the keys will
 be generated. For test purposes, use the user names alice and bob.
+
  The program must be runnable directly from the command shell, e.g., ./genkeys.py alice
+
  The program must generate an RSA public/private key pair using your own code (you cannot
 import RSA code from another module such as PyCrypto). It must use random.SystemRandom or
 os.urandom() as the source of pseudo-random bytes. The keys must be of practical cryptographic
 size.
+
  The program must produce two output files, one containing the RSA private key (e.g., alice.prv)
 and the other one containing the RSA public key (e.g., alice.pub). The format of the key files is
 up to you.
+
  You will need to write code to compute modular inverse and to test whether a number is prime.
 2. crypt.py — encrypt and decrypt data using AES-128 and RSA.
 
@@ -35,6 +39,7 @@ random.SystemRandom or os.urandom(), use the key K with AES-128 to encrypt the d
 the input file, use RSA with the public key file specified on the command line to encrypt K (we
 refer to the encrypted K as K’ in the following), and write the encrypted data and K’ to the output
 file. The format of the output file (how to store K’ along with the encrypted data) is your choice.
+
  To decrypt a file, the program must read the encrypted data and K’ from the input file, RSAdecrypt K’ to recover the key K, use K with AES-128 to decrypt the data, and write the decrypted
 data to the output file.
 
