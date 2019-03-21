@@ -5,7 +5,7 @@ import sys
 import os.path
 from os import listdir
 from os.path import isfile, join
-
+import ast
 import time
 import string
 import math
@@ -35,8 +35,8 @@ class Encryptor:
         print('writing cipher text ', enc);
         with open(file_three, 'wb') as fo:
             fo.write(enc)
-        with open(file_three, 'w') as fo:
-            fo.write(str(",")+ str(encrypted_aes_key)) 
+        with open(file_three, 'a') as fo:
+            fo.write(str("#")+ str(encrypted_aes_key)) 
 
         with open(file_three, 'rb') as fo:
             print(fo.read())    
@@ -60,9 +60,9 @@ class Encryptor:
         n = publicKey[1]
         plaintext = self.key
         #Convert each letter in the plaintext to numbers based on the character using a^b mod m
-        list = [str(x) for x in str(n)]
-        print('key', key, 'n', n, 'list', list)
-        cipher=[pow(ord(char), key, n)  for char in list]
+        lists = [str(x) for x in str(plaintext)]
+        print('key', key, 'n', n, 'list', lists)
+        cipher=[pow(ord(char), key, n)  for char in lists]
 
         #Return the array of bytes
         print('returning cipher' , cipher)
@@ -73,8 +73,14 @@ class Encryptor:
         #Unpack the key into its components
         key, n = pk
         #Generate the plaintext based on the ciphertext and key using a^b mod m
-        plain = [math.pow(chr(char), key,n) for char in ciphertext]
+        
+        ciphertext=ciphertext[1:-2]
+        print('ciphertext for decryptRSA',ciphertext)
+        lists = [int(x) for x in ciphertext.split(",")]
+        print('lists', lists)
+        plain = [pow(int(char), key, n) for char in lists]
         #Return the array of bytes as a string
+        print('plain', plain)
         return ''.join(plain)
 
 
@@ -92,20 +98,26 @@ if(sys.argv[1] == '-e'):
 file_one = sys.argv[2]
 file_two = sys.argv[3]
 file_three = sys.argv[4]
-
+#/crypt.py -e bob.pub message.txt message.cip
 if(isEncy):
     with open(file_one, 'r') as fo:
         text = fo.read()
-        encrypted_aes_key = enc.encryptRSA( text)
+        encrypted_aes_key = enc.encryptRSA(text)
         enc.encrypt_file(file_two, file_three, encrypted_aes_key)
+#./crypt.py -d bob.prv message.cip message.txt        
 else :
     with open(file_one, 'r') as fo:
         text = fo.read()
         pirvateKey = [int(x) for x in text.split("#")]
-        with open(file_two, 'r') as fos:
+        with open(file_two, 'rb') as fos:
             ciphertext = fos.read()
-            cipher, enc_key = [int(x) for x in ciphertext.split(",")]
-            decrypted_aes_key = enc.decryptRSA(self, pirvateKey, enc_key)
+            print('ciphertext', ciphertext)
+            cipher, enc_key = str(ciphertext).split("#")
+            print('pirvateKey', pirvateKey)
+            print('cipher', cipher)
+            print('enc_key', enc_key)
+
+            decrypted_aes_key = enc.decryptRSA(pirvateKey, enc_key)
             enc.decrypt_file(cipher, file_three, decrypted_aes_key)
 
 print("Process is done ")
