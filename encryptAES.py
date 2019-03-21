@@ -5,7 +5,11 @@ import sys
 import os.path
 from os import listdir
 from os.path import isfile, join
+
 import time
+import string
+import math
+import random
 
 AES_128 = 128
 class Encryptor:
@@ -25,10 +29,18 @@ class Encryptor:
     def encrypt_file(self, file_name, file_three, encrypted_aes_key):
         with open(file_name, 'rb') as fo:
             plaintext = fo.read()
-        enc = self.encrypt(plaintext, self.key)
+        print('plaintext................', plaintext);  
+        print(len(self.key))  
+        enc = self.encrypt(plaintext,  self.key)
         print('writing cipher text ', enc);
         with open(file_three, 'wb') as fo:
             fo.write(enc)
+        with open(file_three, 'w') as fo:
+            fo.write(str(",")+ str(encrypted_aes_key)) 
+
+        with open(file_three, 'rb') as fo:
+            print(fo.read())    
+
 
     def decrypt(self, ciphertext, key):
         iv = ciphertext[:AES.block_size]
@@ -36,33 +48,64 @@ class Encryptor:
         plaintext = cipher.decrypt(ciphertext[AES.block_size:])
         return plaintext.rstrip(b"\0")
 
-    def decrypt_file(self, file_name, file_three, decrypted_aes_key):
-        with open(file_name, 'rb') as fo:
-            ciphertext = fo.read()
-        dec = self.decrypt(ciphertext, self.key)
+    def decrypt_file(self, cipher, file_three, decrypted_aes_key):
+        dec = self.decrypt(cipher, decrypted_aes_key)
         print('writing text ', dec);
         with open(file_three, 'wb') as fo:
             fo.write(dec)
+           
+    def encryptRSA(self, file_text):
+        publicKey = [int(x) for x in file_text.split("#")]
+        key = publicKey[0]
+        n = publicKey[1]
+        plaintext = self.key
+        #Convert each letter in the plaintext to numbers based on the character using a^b mod m
+        list = [str(x) for x in str(n)]
+        print('key', key, 'n', n, 'list', list)
+        cipher=[pow(ord(char), key, n)  for char in list]
+
+        #Return the array of bytes
+        print('returning cipher' , cipher)
+        return cipher
+
+  
+    def decryptRSA(self, pk, ciphertext):
+        #Unpack the key into its components
+        key, n = pk
+        #Generate the plaintext based on the ciphertext and key using a^b mod m
+        plain = [math.pow(chr(char), key,n) for char in ciphertext]
+        #Return the array of bytes as a string
+        return ''.join(plain)
 
 
-
-enc = Encryptor(Random.new().read(AES_128))
+keyK = os.urandom(32)
+print('keyK', keyK)
+enc = Encryptor(keyK)
 clear = lambda: os.system('cls')
-isEncy = sys.argv[1] == '-e' ? True : False;
+isEncy = False;
+
+print('First arg is ', sys.argv[1])
+
+if(sys.argv[1] == '-e'):
+    isEncy = True
+
 file_one = sys.argv[2]
 file_two = sys.argv[3]
 file_three = sys.argv[4]
+
 if(isEncy):
-    with open(file_one, 'rb') as fo:
+    with open(file_one, 'r') as fo:
         text = fo.read()
-        publicKey = [int(x) for x in next(fo).split("#")]
-        encrypted_aes_key = encryptRSA(publicKey, self.key)
-        self.encrypt_file(file_two, file_three, encrypted_aes_key)
+        encrypted_aes_key = enc.encryptRSA( text)
+        enc.encrypt_file(file_two, file_three, encrypted_aes_key)
 else :
-    with open(file_one, 'rb') as fo:
+    with open(file_one, 'r') as fo:
         text = fo.read()
-        pirvateKey = [int(x) for x in next(fo).split("#")]
-        decrypted_aes_key = decryptRSA(pirvateKey, self.key)
-        self.encrypt_file(file_two, file_three, decrypted_aes_key)
+        pirvateKey = [int(x) for x in text.split("#")]
+        with open(file_two, 'r') as fos:
+            ciphertext = fos.read()
+            cipher, enc_key = [int(x) for x in ciphertext.split(",")]
+            decrypted_aes_key = enc.decryptRSA(self, pirvateKey, enc_key)
+            enc.decrypt_file(cipher, file_three, decrypted_aes_key)
 
 print("Process is done ")
