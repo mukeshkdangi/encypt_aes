@@ -2,24 +2,28 @@ import random
 import math
 import sys
 
+
+# Return the GCD of a and b using Euclid's Algorithm
 def gcd(a, b):
-    while b != 0:
-        a, b = b, a % b
-    return a
+    while a != 0:
+        a, b = b % a, a
+    return b
 
-def egcd(a, b):
-    if a == 0:
-        return b, 0, 1
-    else:
-        g, y, x = egcd(b % a, a)
-        return g, x - (b // a) * y, y
+# Returns the modular inverse of a % m, which is
+# the number x such that a*x % m = 1
+# Returns the modular inverse of a % m, which is the number x such that a*x % m = 1
+# no mod inverse if a & m aren't relatively prime
+# // is the integer division operator
 
-def multiplicative_inverse(a, m):
-    g, x, y = egcd(a, m)
-    if g != 1:
-        raise Exception('modular inverse does not exist')
-    else:
-        return x % m
+def findModInverse(a, m):
+    if gcd(a, m) != 1:
+        return None 
+    u1, u2, u3 = 1, 0, a
+    v1, v2, v3 = 0, 1, m
+    while v3 != 0:
+        q = u3 // v3 
+        v1, v2, v3, u1, u2, u3 = (u1 - q * v1), (u2 - q * v2), (u3 - q * v3), v1, v2, v3
+    return u1 % m
     
 def get_primes(start, stop):
     if start >= stop:
@@ -37,83 +41,93 @@ def get_primes(start, stop):
 
     return primes
 
-def are_relatively_prime(a, b):
-    for n in range(2, min(a, b) + 1):
-        if a % n == b % n == 0:
-            return False
+
+def rabinMiller(num):
+    s = num - 1
+    t = 0
+    while s % 2 == 0:
+        s = s // 2
+        t += 1
+
+    for trials in range(5):
+        a = random.randrange(2, num - 1)
+        v = pow(a, s, num)
+        if v != 1:
+            i = 0
+            while v != (num - 1):
+                if i == t - 1:
+                    return False
+                else:
+                    i = i + 1
+                    v = (v ** 2) % num
     return True
 
-def is_prime(n):
-    if n % 2 == 0 and n > 2: 
+    # About 1/3 of the time we can quickly determine if num is not prime
+    # by dividing by the first few dozen prime numbers. This is quicker
+    # than rabinMiller(), but unlike rabinMiller() is not guaranteed to
+    # prove that a number is prime.
+    # See if any of the low prime numbers can divide num
+    # If all else fails, call rabinMiller() to determine if num is a prime.
+
+def isPrime(num):
+    if (num < 2):
         return False
-    return all(n % i for i in range(3, int(math.sqrt(n)) + 1, 2))
+    lowPrimes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997]
 
-def generate_keypair(length):
-    n_min = 1 << (length - 1)
-    n_max = (1 << length) - 1
-    start = 1 << (length // 2 - 1)
-    stop = 1 << (length // 2 + 1)
-    primes = get_primes(start, stop)
-    while primes:
-        p = random.choice(primes)
-        primes.remove(p)
-        q_candidates = [q for q in primes
-                        if n_min <= p * q <= n_max]
-        if q_candidates:
-            q = random.choice(q_candidates)
-            break
-    else:
-        raise AssertionError("cannot find 'p' and 'q' for a key of "
-                             "length={!r}".format(length))
+    if num in lowPrimes:
+        return True
 
-    print('p', p , 'q' , q)    
+    for prime in lowPrimes:
+        if (num % prime == 0):
+            return False
+    return rabinMiller(num)
+
+
+# Return a random prime number of keysize bits in size.
+
+def generateLargePrime(keysize=1024):
+    while True:
+        num = random.randrange(2**(keysize-1), 2**(keysize))
+        if isPrime(num):
+            return num
+
+    # Creates a public/private key pair with keys that are keySize bits in
+    # size. This function may take a while to run.
+    # Step 1: Create two prime numbers, p and q. Calculate n = p * q.
+    # Step 2: Create a number e that is relatively prime to (p-1)*(q-1).
+    # Keep trying random numbers for e until one is valid.
+    # Step 3: Calculate d, the mod inverse of e.
+def generateKey(keySize):
+
+    print('Generating p prime...')
+    p = generateLargePrime(keySize)
+    print('Generating q prime...')
+    q = generateLargePrime(keySize)
     n = p * q
-    phi = (p-1) * (q-1)
-   #Choose an integer e such that e and phi(n) are coprime
-    e = random.randrange(1, phi)
 
-    #Use Euclid's Algorithm to verify that e and phi(n) are comprime
-    g = gcd(e, phi)
-    while g != 1:
-        e = random.randrange(1, phi)
-        g = gcd(e, phi)
+   
 
-    #Use Extended Euclid's Algorithm to generate the private key
-    d = multiplicative_inverse(e, phi)
-    return ((e, n), (d, n))
+    print('Generating e that is relatively prime to (p-1)*(q-1)...')
+    while True:
+        e = random.randrange(2 ** (keySize - 1), 2 ** (keySize))
+        if gcd(e, (p - 1) * (q - 1)) == 1:
+             break
 
-def encryptRSA(pk, plaintext):
-    key, n = pk
-    #Convert each letter in the plaintext to numbers based on the character using a^b mod m
-    cipher = [math.pow(ord(char), key) % n for char in plaintext]
-    #Return the array of bytes
-    return cipher
-
-def decryptRSA(pk, ciphertext):
-    #Unpack the key into its components
-    key, n = pk
-    #Generate the plaintext based on the ciphertext and key using a^b mod m
-    plain = [math.pow(chr(char), key) % n for char in ciphertext]
-    #Return the array of bytes as a string
-    return ''.join(plain)
+    print('Calculating d that is mod inverse of e...')
+    d = findModInverse(e, (p - 1) * (q - 1))
+    publicKey = (n, e)
+    privateKey = (n, d)
+    return (publicKey, privateKey)
     
 
 if __name__ == '__main__':
-
-    public, private = generate_keypair(25)
-    
+    keySize =1024
+    public, private = generateKey(keySize)
     print ("Your public key is ", public ," and your private key is ", private)
-    e, n = public
-    d, n = private
     with open(sys.argv[1] + ".pub", 'w') as fo:
-            fo.write(str(e)+'#'+str(n))
+            fo.write('%s,%s,%s' % (keySize, public[0], public[1]))
             
     with open(sys.argv[1] + ".prv", 'w') as fo:
-            fo.write(str(d)+'#'+str(n))        
-            
-    #encrypted_msg = encrypt(private, message)
-    #print ("Your encrypted message is: ")
-    #print (''.join(map(lambda x: str(x), encrypted_msg)))
-    #print ("Decrypting message with public key ", public ," . . .")
-    #print ("Your message is:")
-    #print (decrypt(public, encrypted_msg))
+            fo.write('%s,%s,%s' % (keySize, private[0], private[1]))
+
+
