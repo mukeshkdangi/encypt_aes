@@ -91,3 +91,5 @@ cat message2.cip
 ./crypt -d alice.prv message2.cip message2.txt
 cat message2.txt
 ```
+
+![screenshot ](https://github.com/mukeshkdangi/encypt_aes/blob/master/Screenshot%202019-04-04%20at%201.01.05%20AM.png)
