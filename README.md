@@ -3,6 +3,23 @@
 need to write one program to generate RSA keys, and a second one that uses the RSA keys to perform the
 encryption and decryption of messages.
 
+### Step 1 
+- generate Bob/Alice key pair(private and public key) alice.pub and alice.prv
+```
+python genkeys.py alice
+```
+### Step 2
+- Encrypt message.txt file using AES and also encrypt AES key using RSA 2049 
+- Store the cipher text in message.cip
+```
+python AESTest.py -e alice.pub message.txt message.cip
+```
+
+### Step 3
+- Decrypt message.cip file using alice.prv to  message.txt file 
+```
+python AESTest.py -d alice.prv message.cip message.txt
+ ```
 
 ## Project Details
 To complete the project, you will need to write two Python programs:
