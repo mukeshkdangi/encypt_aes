@@ -121,7 +121,7 @@ def generateKey(keySize):
     
 
 if __name__ == '__main__':
-    keySize =1024
+    keySize =2048
     public, private = generateKey(keySize)
     print ("Your public key is ", public ," and your private key is ", private)
     with open(sys.argv[1] + ".pub", 'w') as fo:
