@@ -9,14 +9,11 @@ RSA_BYTE_SIZE = 256
 DEFAULT_ENCODEING_FORMAT='utf-8'
 DEFAULT_CIPHER_KEY_SEP='@@@'
 
-
 class Encryptor:
-
     def __init__(self, key, keyToStore):
         self.key = key
         self.keyToStore = keyToStore
-        self.bys = 32
-        
+        self.bys = 32   
 
     @staticmethod
     def dounpad(message_str):
@@ -54,7 +51,7 @@ class Encryptor:
         # MODE_ECB AES Cipher 
         cipher = AES.new(key, AES.MODE_ECB)
         decrypted = cipher.decrypt(base64.b64decode(enc))
-        print('decrypted', decrypted)
+        #print('decrypted', decrypted)
         return str(Encryptor.dounpad(decrypted), DEFAULT_ENCODEING_FORMAT)   
 
     @staticmethod    
