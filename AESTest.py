@@ -31,18 +31,17 @@ class Encryptor:
 
     def encrypt(self, raw):
         raw = self.pad(raw)
-        #self.key = hashlib.sha256(key.encode()).digest()
-        self.key = hashlib.md5(self.key.encode()).digest()
-        print('Hex of key', self.key)
+        self.key = hashlib.md5(str(self.key).encode('utf-8')).digest()
+        print('hashlib of key', self.key)
         cipher = AES.new(self.key, AES.MODE_ECB)
         encrypted = cipher.encrypt(raw)
+
         encoded = base64.b64encode(encrypted)
         return str(encoded, 'utf-8')   
 
     def encrypt_file(self, file_cip, file_txt, encrypted_aes_key):
         with open(file_txt, 'r') as fo:
             plaintext = fo.read()
-
         enc = self.encrypt(plaintext)
         print('writing contentn', enc)
         print('encrypted_aes_key key ', encrypted_aes_key, file_cip)
@@ -52,11 +51,8 @@ class Encryptor:
 
     @staticmethod    
     def decrypt(enc, key):
-        print('trying to descript ', enc );
-        print('\n key is ', key)
         #key = (key).decode('utf-8')
         key = hashlib.md5(key.encode('utf-8')).digest()
-        print('Hex of key', key)
         decoded = base64.b64decode(enc)
         cipher = AES.new(key, AES.MODE_ECB)
         decrypted = cipher.decrypt(decoded)
