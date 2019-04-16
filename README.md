@@ -23,6 +23,52 @@ python AESTest.py -e alice.pub message.txt message.cip
 python AESTest.py -d alice.prv message.cip message.txt
  ```
 
+### Example 
+```
+Uses: 
+mukesh@localhost in ~/Downloads/CSCI531_HW_3 on master [!?$]$ python genkeys.py bob
+********* generating p prime...........
+********* generating q prime..................
+Storing.........  bob.pub
+Storing..........  bob.prv
+
+mukesh@localhost in ~/Downloads/CSCI531_HW_3 on master [!?$]$ python genkeys.py alice
+********* generating p prime...........
+********* generating q prime..................
+Storing.........  alice.pub
+Storing..........  alice.prv
+
+mukesh@localhost in ~/Downloads/CSCI531_HW_3 on master [!?$]$ cat message.txt 
+This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh 
+mukesh@localhost in ~/Downloads/CSCI531_HW_3 on master [!?$]$ python crypt.py -e bob.pub message.txt message.cip
+Encryption of message.txt file is done. cipher text is present in message.cip file 
+Process is done 
+
+mukesh@localhost in ~/Downloads/CSCI531_HW_3 on master [!?$]$ python crypt.py -d bob.prv message.cip message.txt
+plaintext This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh 
+Decryption of message.cip file is done. plain text is in message.txt file 
+Process is done 
+
+mukesh@localhost in ~/Downloads/CSCI531_HW_3 on master [!?$]$ cat message.txt
+This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh This is Mukesh 
+
+Using Alice Key with message2.txt
+mukesh@localhost in ~/Downloads/CSCI531_HW_3 on master [!?$]$ cat message2.txt 
+I have strong grasp of technology as well as business skills. Since in my previous role i had interacted with business leads and the country manager of our Asia pacific business as well as their technology teams.
+
+mukesh@localhost in ~/Downloads/CSCI531_HW_3 on master [!?$]$ python crypt.py -e alice.pub message2.txt message2.cip
+Encryption of message.txt file is done. cipher text is present in message.cip file 
+Process is done 
+
+mukesh@localhost in ~/Downloads/CSCI531_HW_3 on master [!?$]$ python crypt.py -d alice.prv message2.cip message2.txt
+plaintext I have strong grasp of technology as well as business skills. Since in my previous role i had interacted with business leads and the country manager of our Asia pacific business as well as their technology teams.
+Decryption of message2.cip file is done. plain text is in message.txt file 
+Process is done 
+
+mukesh@localhost in ~/Downloads/CSCI531_HW_3 on master [!?$]$ cat message2.txt 
+I have strong grasp of technology as well as business skills. Since in my previous role i had interacted with business leads and the country manager of our Asia pacific business as well as their technology teams.
+
+```
 ## Project Details
 To complete the project, you will need to write two Python programs:
 -[x] 1. genkeys.py — generate RSA public and private keys.
